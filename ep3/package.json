@@ -1,0 +1,16 @@
+{
+  "name": "last-bus-ep3",
+  "private": true,
+  "version": "3.0.0",
+  "type": "module",
+  "scripts": {
+    "stills": "node scripts/render.mjs --stills",
+    "render": "node scripts/render.mjs --video",
+    "audio": "python3 scripts/mix3.py"
+  },
+  "dependencies": {
+    "@ffmpeg-installer/ffmpeg": "^1.1.0",
+    "@resvg/resvg-js": "^2.6.2",
+    "esbuild": "^0.23.0"
+  }
+}

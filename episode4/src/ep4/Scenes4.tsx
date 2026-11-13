@@ -6,6 +6,7 @@ import {C, sm, win} from './story4';
 import {envState, doubleState, heroState} from './state4';
 import {HammerShape, KeyShape, KeyInFist, Fist} from './props4';
 import {Outside} from './Set4';
+import {Bokeh} from './Look4';
 
 const HOOD = '#5470a6', HOOD_D = '#445f95';
 
@@ -20,8 +21,17 @@ export const AisleShot: React.FC<{t: number; push?: [number, number]; breath?: n
     <g transform={`translate(540 960) scale(${s}) translate(-540 -960)`}>
       <rect width={1080} height={1920} fill="#121a36" />
       <path d={`M0 0 L1080 0 L${vx + 120} ${vy - 160} L${vx - 120} ${vy - 160}Z`} fill="#141c3a" />
-      {[0.25, 0.5, 0.75].map((k, i) => <path key={i} d={`M${vx - 120 + 240 * k} ${vy - 160} L${1080 * k} 0`} stroke="#a9c2ff" strokeWidth={10 * k + 4} opacity={0.35} />)}
-      <path d={`M0 1920 L1080 1920 L${vx + 120} ${vy + 80} L${vx - 120} ${vy + 80}Z`} fill="#1d2645" />
+      {[0.25, 0.5, 0.75].map((k, i) => (
+        <g key={i}>
+          <path d={`M${vx - 120 + 240 * k} ${vy - 160} L${1080 * k} 0`} stroke="#bfe0ff" strokeWidth={30 * k + 14} opacity={0.35} filter="url(#lkBlur8)" />
+          <path d={`M${vx - 120 + 240 * k} ${vy - 160} L${1080 * k} 0`} stroke="#eaf5ff" strokeWidth={10 * k + 4} opacity={0.9} />
+        </g>
+      ))}
+      <path d={`M0 1920 L1080 1920 L${vx + 120} ${vy + 80} L${vx - 120} ${vy + 80}Z`} fill="#202d5c" />
+      {/* отражения светильников на мокром полу прохода */}
+      <g filter="url(#lkBlur20)">{[0.25, 0.5, 0.75].map((k, i) => <path key={i} d={`M${vx - 120 + 240 * k} ${vy + 90} L${1080 * k} 1920`} stroke="#a8d0ff" strokeWidth={40 * k + 20} opacity={0.22} />)}</g>
+      {/* тёплые пятна фонарей из боковых окон */}
+      <g filter="url(#lkBlur20)" style={{mixBlendMode: "screen"}}>{[[180, 1250, 140], [900, 1150, 120], [330, 1000, 70]].map(([x, y, r], i) => <ellipse key={i} cx={x} cy={y} rx={r} ry={r * 0.6} fill="#ffb866" opacity={0.35} />)}</g>
       <path d={`M0 0 L${vx - 120} ${vy - 160} L${vx - 120} ${vy + 80} L0 1920Z`} fill="#18203f" />
       <path d={`M1080 0 L${vx + 120} ${vy - 160} L${vx + 120} ${vy + 80} L1080 1920Z`} fill="#18203f" />
       {/* окна по сторонам, задняя дверь вдали */}
@@ -112,7 +122,8 @@ export const FloorShot: React.FC<{t: number}> = ({t}) => {
       <rect x={0} y={740} width={1080} height={30} fill="#3a4670" />
       <rect x={0} y={770} width={1080} height={1150} fill="url(#e4floor)" />
       {[0, 1, 2, 3].map((k) => <path key={k} d={`M0 ${980 + k * 230} H1080`} stroke="#29335a" strokeWidth={6} />)}
-      <ellipse cx={540} cy={1250} rx={520} ry={260} fill="#7fa8ff" opacity={0.06} />
+      <ellipse cx={540} cy={1250} rx={520} ry={260} fill="#7fa8ff" opacity={0.08} />
+      <g filter="url(#lkBlur20)"><ellipse cx={760} cy={900} rx={260} ry={60} fill="#ffb866" opacity={0.3} /><ellipse cx={260} cy={1500} rx={300} ry={70} fill="#a8d0ff" opacity={0.25} /></g>
       {/* молоток: лежит после того, как его положили */}
       {release && <g transform={HAMMER_LAID}><HammerShape /></g>}
       {/* ключ на полу до того, как его взяли */}
@@ -156,6 +167,7 @@ export const PhoneShot: React.FC<{t: number; which: 1 | 2}> = ({t, which}) => {
     <g>
       <rect width={1080} height={1920} fill="#0f1630" />
       <ellipse cx={540} cy={760} rx={620} ry={760} fill="#4a6fd6" opacity={0.18} />
+      <Bokeh frame={frame} warm={0.55} count={18} />
       {/* левая рука с ключом — внизу слева (ключ не исчезает) */}
       <g transform="translate(150 1530) rotate(-20) scale(2.1)">
         <rect x={-40} y={-400} width={80} height={330} fill={HOOD} />

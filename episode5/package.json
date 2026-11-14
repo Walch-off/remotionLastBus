@@ -1,0 +1,22 @@
+{
+  "name": "last-bus-remotion",
+  "version": "1.4.0",
+  "private": true,
+  "description": "«Последний автобус» — анимационный TikTok-сериал (Remotion)",
+  "scripts": {
+    "studio": "remotion studio src/index.ts",
+    "render:ep4": "remotion render src/index.ts LastBusPart4 out/last-bus-part4.mp4",
+    "render:ep5": "remotion render src/index.ts LastBusPart5 out/last-bus-part5.mp4",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.543",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "remotion": "4.0.543"
+  },
+  "devDependencies": {
+    "@types/react": "19.1.8",
+    "typescript": "5.8.3"
+  }
+}

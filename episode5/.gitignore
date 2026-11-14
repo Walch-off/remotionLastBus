@@ -1,0 +1,8 @@
+node_modules
+out
+.cache
+*.log
+# дорожки частей 1–3 — в исходном архиве last-bus-remotion-project.zip
+public/audio/
+public/audio2/
+public/audio3/

@@ -1,7 +1,7 @@
 import React from 'react';
 import {AbsoluteFill, Audio, Sequence, staticFile, useCurrentFrame, useVideoConfig, spring} from 'remotion';
 import {C, FPS, W, H, TOTAL4, WORDS4, sm, win} from './story4';
-import {Defs4, Set4} from './Set4';
+import {AllDefs as Defs4, Set4} from './Set4';
 import {AisleShot, WindowShot, FloorShot, PhoneShot} from './Scenes4';
 import {PhoneDefs} from '../components/Phone';
 
@@ -66,16 +66,18 @@ const RAW: [string, number, ((a: number, b: number) => Cam) | ((t: number) => Re
 ];
 export const SHOTS4 = RAW.map(([id, a, f], i) => ({id, a, b: i + 1 < RAW.length ? RAW[i + 1][1] : C.end, f}));
 
+/** общая цветокоррекция: насыщеннее и чуть контрастнее, без осветления ночи */
+const GRADE: React.CSSProperties = {filter: 'saturate(1.3) contrast(1.08) brightness(1.03)'};
 const ShotView: React.FC<{a: number; b: number; f: any}> = ({a, b, f}) => {
   const frame = useCurrentFrame();
   const t = a + frame / FPS;
   const out = f(t === undefined ? 0 : t);
-  if (React.isValidElement(out)) return <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`}><Defs4 /><PhoneDefs />{out}</svg>;
+  if (React.isValidElement(out)) return <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} style={GRADE}><Defs4 /><PhoneDefs />{out}</svg>;
   const cam = f(a, b) as Cam;
   const u = sm(t, a, b);
   const cx = cam[0][1] + (cam[1][1] - cam[0][1]) * u, cy = cam[0][2] + (cam[1][2] - cam[0][2]) * u, s = cam[0][3] + (cam[1][3] - cam[0][3]) * u;
   return (
-    <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`}>
+    <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} style={GRADE}>
       <Defs4 />
       <g transform={`translate(540 960) scale(${s}) translate(${-cx} ${-cy})`}><Set4 t={t} /></g>
       <rect width={W} height={H} fill="url(#e4vig)" />

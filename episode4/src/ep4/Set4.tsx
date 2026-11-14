@@ -4,20 +4,22 @@ import {Hero} from '../components/Hero';
 import {C} from './story4';
 import {HERO, DRV, MIRROR, HAMMER_HOOK, KEY_FLOOR, HAMMER_FLOOR, IMPACT, heroState, driverState, keyFall, mirrorState, envState, doubleState} from './state4';
 import {HammerInFist, HammerShape, KeyInFist, KeyShape, PhoneInFist, PointFist, WetHand, crackPattern, PressedPalm, WaterPrint, MirrorFace, Fist} from './props4';
+import {LookDefs, CeilingGlow, RouteSign, WallSeats, GlassRain, LightShaft, FloorReflections, CabPanels, CabDetails, CityDetail, RainLayers} from './Look4';
 
 export const Defs4: React.FC = () => (
   <defs>
-    <linearGradient id="e4wall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#1a2547" /><stop offset="1" stopColor="#141d3a" /></linearGradient>
-    <linearGradient id="e4floor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#202a48" /><stop offset="1" stopColor="#121a32" /></linearGradient>
-    <linearGradient id="e4sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#0b1430" /><stop offset="1" stopColor="#1c2546" /></linearGradient>
+    <linearGradient id="e4wall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#1d3170" /><stop offset="0.6" stopColor="#182a5e" /><stop offset="1" stopColor="#111d44" /></linearGradient>
+    <linearGradient id="e4floor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#24305a" /><stop offset="1" stopColor="#0f1734" /></linearGradient>
+    <linearGradient id="e4sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#0a1236" /><stop offset="0.7" stopColor="#2a2158" /><stop offset="1" stopColor="#4a2d4e" /></linearGradient>
     <radialGradient id="e4lampGlow"><stop offset="0" stopColor="#ffc56b" stopOpacity={0.85} /><stop offset="0.4" stopColor="#ff9f3f" stopOpacity={0.25} /><stop offset="1" stopColor="#ff9f3f" stopOpacity={0} /></radialGradient>
     <radialGradient id="e4warm"><stop offset="0" stopColor="#ffb35a" stopOpacity={0.32} /><stop offset="1" stopColor="#ffb35a" stopOpacity={0} /></radialGradient>
     <radialGradient id="e4cool"><stop offset="0" stopColor="#7fa8ff" stopOpacity={0.22} /><stop offset="1" stopColor="#7fa8ff" stopOpacity={0} /></radialGradient>
     <linearGradient id="e4glass" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#cfe0ff" stopOpacity={0.16} /><stop offset="0.45" stopColor="#cfe0ff" stopOpacity={0} /><stop offset="0.6" stopColor="#cfe0ff" stopOpacity={0.08} /><stop offset="1" stopColor="#cfe0ff" stopOpacity={0} /></linearGradient>
-    <linearGradient id="e4mirror" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#3a4c78" /><stop offset="1" stopColor="#1f2a4c" /></linearGradient>
-    <radialGradient id="e4vig" cx="0.5" cy="0.5" r="0.75"><stop offset="0.55" stopColor="#000" stopOpacity={0} /><stop offset="1" stopColor="#02040c" stopOpacity={0.6} /></radialGradient>
+    <linearGradient id="e4mirror" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#4a6cb0" /><stop offset="0.5" stopColor="#2a3d78" /><stop offset="1" stopColor="#1c2a5a" /></linearGradient>
+    <radialGradient id="e4vig" cx="0.5" cy="0.5" r="0.75"><stop offset="0.6" stopColor="#000" stopOpacity={0} /><stop offset="1" stopColor="#03051a" stopOpacity={0.55} /></radialGradient>
   </defs>
 );
+export const AllDefs: React.FC = () => (<><Defs4 /><LookDefs /></>);
 
 /** Герой в состоянии на время t */
 export const HeroAt: React.FC<{t: number; id?: string; legs?: boolean; overrides?: any}> = ({t, id = 'h4', legs = true, overrides = {}}) => {
@@ -47,11 +49,8 @@ export const Outside: React.FC<{t: number; frame: number; detail?: number}> = ({
   return (
     <g>
       <rect x={-200} y={300} width={1500} height={900} fill="url(#e4sky)" />
-      {/* дальние дома */}
-      <g opacity={0.9}>
-        <rect x={470} y={560} width={150} height={260} fill="#151d38" /><rect x={640} y={600} width={120} height={220} fill="#121a33" /><rect x={780} y={540} width={160} height={280} fill="#161f3c" />
-        {[[500, 600], [560, 640], [800, 590], [860, 660], [670, 650]].map(([x, y], i) => <rect key={i} x={x} y={y} width={22} height={28} fill="#3a4672" opacity={0.6} />)}
-      </g>
+      {/* дальний город: дома с окнами, вывеска, огни */}
+      <CityDetail frame={frame} lamp={lit} />
       {/* тротуар и лужи */}
       <rect x={-200} y={960} width={1500} height={260} fill="#1d2440" />
       <ellipse cx={720} cy={1020} rx={160} ry={14} fill="#ffc56b" opacity={0.25 * lit} />
@@ -71,12 +70,7 @@ export const Outside: React.FC<{t: number; frame: number; detail?: number}> = ({
           shade={0.38 + 0.5 * (1 - lit)} shadeColor={[0.1, 0.16, 0.34]} blinkSeed={71} />
       </g>
       {/* дождь */}
-      <g stroke="#9fb6e6" strokeWidth={2} opacity={0.35}>
-        {Array.from({length: 36}).map((_, i) => {
-          const x = 480 + ((i * 97) % 440), y = 480 + (((frame * 38 + i * 211) % 700));
-          return <path key={i} d={`M${x} ${y} l-6 30`} />;
-        })}
-      </g>
+      <RainLayers frame={frame} lamp={lit} />
     </g>
   );
 };
@@ -90,7 +84,8 @@ export const Mirror: React.FC<{t: number; frame: number; detail?: boolean}> = ({
   const jit = m.knock * 2.2;
   return (
     <g>
-      <rect x={-w / 2 - 14} y={-h / 2 - 14} width={w + 28} height={h + 28} rx={18} fill="#0e1222" stroke="#3b4565" strokeWidth={4} />
+      <rect x={-w / 2 - 18} y={-h / 2 - 18} width={w + 36} height={h + 36} rx={20} fill="url(#lkChrome)" />
+      <rect x={-w / 2 - 10} y={-h / 2 - 10} width={w + 20} height={h + 20} rx={14} fill="#0e1430" />
       <clipPath id="e4mclip"><rect x={-w / 2} y={-h / 2} width={w} height={h} rx={8} /></clipPath>
       <g clipPath="url(#e4mclip)">
         <rect x={-w / 2} y={-h / 2} width={w} height={h} fill="url(#e4mirror)" />
@@ -119,6 +114,9 @@ export const Mirror: React.FC<{t: number; frame: number; detail?: boolean}> = ({
         </g>
         {/* стекло: блики */}
         <rect x={-w / 2} y={-h / 2} width={w} height={h} fill="url(#e4glass)" />
+        {/* диагональные блики стекла */}
+        <path d={`M${-w / 2 + 40} ${-h / 2} L${-w / 2 + 90} ${-h / 2} L${-w / 2 + 10} ${h / 2} L${-w / 2 - 40} ${h / 2}Z`} fill="#e6f0ff" opacity={0.1} />
+        <path d={`M${-w / 2 + 110} ${-h / 2} L${-w / 2 + 125} ${-h / 2} L${-w / 2 + 45} ${h / 2} L${-w / 2 + 30} ${h / 2}Z`} fill="#e6f0ff" opacity={0.12} />
         {/* трещины поверх всего, что по ту сторону */}
         {m.crack > 0 && (
           <g transform={`translate(${jit * Math.sin(frame * 3.1)} ${jit * Math.cos(frame * 2.7)})`}>
@@ -160,8 +158,8 @@ export const Set4: React.FC<{t: number; heroOverrides?: any; hideHero?: boolean}
     <g transform={`rotate(${e.rock} 540 1720)`}>
       <rect x={-600} y={-600} width={2400} height={3200} fill="#0d1328" />
       {/* потолок */}
-      <rect x={-300} y={-300} width={1700} height={760} fill="#121a36" />
-      {[120, 460, 800].map((x, i) => <rect key={i} x={x} y={330} width={220} height={22} rx={10} fill="#a9c2ff" opacity={0.55} />)}
+      <rect x={-300} y={-300} width={1700} height={760} fill="#15214a" />
+      <CeilingGlow />
       <rect x={-300} y={440} width={1700} height={10} fill="#2a3456" />
       {/* стена с окном */}
       <rect x={-300} y={450} width={1700} height={1120} fill="url(#e4wall)" />
@@ -172,7 +170,12 @@ export const Set4: React.FC<{t: number; heroOverrides?: any; hideHero?: boolean}
         <g transform="translate(752 780) scale(0.5)" opacity={0.7 * doubleState(t).printOnGlass}><WaterPrint op={1} t={t} drip={0.6} /></g>
       )}
       <rect x={487} y={522} width={412} height={596} rx={26} fill="url(#e4glass)" />
-      <rect x={487} y={522} width={412} height={596} rx={26} fill="none" stroke="#33405f" strokeWidth={14} />
+      <clipPath id="e4winRain"><rect x={487} y={522} width={412} height={596} rx={26} /></clipPath>
+      <g clipPath="url(#e4winRain)"><GlassRain x={487} y={522} w={412} h={596} frame={frame} warm={lampWarm} /></g>
+      <rect x={487} y={522} width={412} height={596} rx={26} fill="none" stroke="#3a4a78" strokeWidth={14} />
+      <rect x={480} y={515} width={426} height={8} rx={4} fill="url(#lkChrome)" opacity={0.6} />
+      <RouteSign frame={frame} />
+      <WallSeats />
       {/* стойка и молоток на креплении */}
       <rect x={443} y={460} width={44} height={1110} fill="#2a3456" /><rect x={449} y={460} width={8} height={1110} fill="#3b4870" />
       <rect x={445} y={850} width={40} height={150} rx={6} fill="#d9dee8" /><rect x={449} y={856} width={32} height={20} rx={3} fill="#c7433a" />
@@ -195,25 +198,28 @@ export const Set4: React.FC<{t: number; heroOverrides?: any; hideHero?: boolean}
       <rect x={430} y={470} width={700} height={12} rx={6} fill="#8a96b8" />
       {[620, 760].map((x, i) => <g key={i}><rect x={x - 3} y={480} width={6} height={70} fill="#6a7698" /><circle cx={x} cy={566} r={18} fill="none" stroke="#8a96b8" strokeWidth={7} /></g>)}
       {/* кабина: задняя перегородка */}
-      <rect x={-300} y={560} width={743} height={1010} fill="#18203d" />
+      <rect x={-300} y={560} width={743} height={1010} fill="#19244c" />
+      <CabPanels />
       <rect x={-300} y={560} width={743} height={12} fill="#2a3456" />
       {/* кронштейн и зеркало */}
       <rect x={MIRROR.x - 5} y={450} width={10} height={MIRROR.y - MIRROR.h / 2 - 450} fill="#3b4565" />
       <g transform={`translate(${MIRROR.x} ${MIRROR.y})`}><Mirror t={t} frame={frame} /></g>
       {/* водитель */}
-      <Hero id="drv4" x={DRV.x} y={DRV.y} scale={DRV.s} anchor={[505, 575]} legs={false} cap stain={false}
+      <g filter="url(#lkRimCool)"><Hero id="drv4" x={DRV.x} y={DRV.y} scale={DRV.s} anchor={[505, 575]} legs={false} cap stain={false}
         armL={ds.armL} elbowL={ds.elbowL} armR={ds.armR} elbowR={ds.elbowR} armsFront={ds.armsFront}
         itemR={ds.holdsKey ? <KeyInFist worldRot={(ds.armR - 90 + ds.elbowR)} swing={Math.sin(t * 1.7) * 5} /> : undefined}
         face={ds.face} face2={ds.face2} faceMix={ds.faceMix} look={ds.look} turn={ds.turn} tilt={ds.tilt} blinkSeed={31}
-        shade={0.12} shadeColor={[0.06, 0.08, 0.2]} />
+        shade={0.06} shadeColor={[0.06, 0.08, 0.2]} /></g>
       {/* передняя панель кабины (скрывает ноги водителя) */}
       <path d="M-300 1300 L440 1300 L440 1570 L-300 1570Z" fill="#232c4c" />
       <rect x={-300} y={1292} width={742} height={18} rx={8} fill="#3a4670" />
       <ellipse cx={120} cy={1300} rx={110} ry={26} fill="none" stroke="#0f1324" strokeWidth={16} />
       {[60, 120, 180, 300].map((x, i) => <circle key={i} cx={x} cy={1380} r={9} fill={i === 3 ? '#ff6b5a' : '#6cf0a8'} opacity={e.engine ? 0.9 : 0.12} />)}
+      <CabDetails engine={e.engine} frame={frame} />
       {/* пол */}
       <rect x={-300} y={1570} width={1700} height={500} fill="url(#e4floor)" />
       <rect x={-300} y={1566} width={1700} height={8} fill="#2e3a60" />
+      <FloorReflections lamp={lampWarm} engine={e.engine} frame={frame} />
       {/* мокрые следы в проходе: от двери к герою */}
       {Array.from({length: 6}).map((_, k) => {
         const vis = e.stepsVis(5 - k, 6);
@@ -232,10 +238,11 @@ export const Set4: React.FC<{t: number; heroOverrides?: any; hideHero?: boolean}
       {kf.mode === 'fall' && <g transform={`translate(${kf.x} ${kf.y}) rotate(${kf.rot})`}><KeyShape g={-kf.rot} /></g>}
       {kf.mode === 'floorCU' && t < C.pick + 1.0 && <g transform={`translate(${KEY_FLOOR.x} ${KEY_FLOOR.y})`}><KeyShape g={-90} /></g>}
       {/* герой */}
-      {!hideHero && <HeroAt t={t} overrides={heroOverrides} />}
+      {!hideHero && <g filter={lampWarm > 0.5 ? "url(#lkRimWarm)" : "url(#lkRimCool)"}><HeroAt t={t} overrides={heroOverrides} /></g>}
       {/* мокрая ладонь без владельца */}
       <WetHand id="wh4" x={e.palmPos[0]} y={e.palmPos[1]} scale={0.62} appear={e.palmAppear} open={e.palmOpen} t={t} rotDeg={-8 + 18 * e.palmOpen} />
       {/* свет: тёплый от фонаря через окно, холодный сверху */}
+      <LightShaft lamp={lampWarm} frame={frame} />
       <ellipse cx={700} cy={900} rx={520} ry={700} fill="url(#e4warm)" opacity={lampWarm} />
       <ellipse cx={540} cy={500} rx={700} ry={500} fill="url(#e4cool)" />
     </g>
